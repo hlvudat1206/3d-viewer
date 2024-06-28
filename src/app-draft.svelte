@@ -440,6 +440,7 @@
     TWEEN.update();
     composer.render();
   };
+
   function onWindowResize() {
     const _0x496816 = window.innerWidth;
     const _0x349113 = window.innerHeight;

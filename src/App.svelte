@@ -18,6 +18,7 @@
   import { ReflectorForSSRPass } from "@js/post-processing/ReflectorForSSRPass";
   import { SSRPass } from "@js/post-processing/SSRPass";
   import { GUI } from "@js/lil-gui.module.min.js";
+  import { TWEEN } from "@js/tween.module.min.js";
 
   let controls;
   let canvas;
@@ -34,7 +35,8 @@
   let cubeCamera;
   let mobihome;
   let internalEnvMap;
-
+  let isGoMallMode = false;
+  let textButtonView = "View Mode";
   const ssrParams = {
     enableSSR: true,
     autoRotate: true,
@@ -85,7 +87,7 @@
       0.01,
       1000
     );
-    camera.position.set(-2.5, 1.25, 2.25);
+    camera.position.set(0, 3, -1);
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xcccccc);
@@ -272,7 +274,7 @@
     const aoParameters = {
       radius: 0.1,
       distanceExponent: 1.85,
-      thickness: 0.5,
+      thickness: 0.25,
       scale: 1.5,
       samples: 0x20,
       distanceFallOff: 0x1,
@@ -481,10 +483,61 @@
     });
   };
 
+  const onOverViewButton = () => {
+    // Toggle the mode between Mall and Home
+    isGoMallMode = !isGoMallMode;
+
+    if (isGoMallMode) {
+      textButtonView = "Home Mode";
+
+      let cameraPosition = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
+
+      new TWEEN.Tween(cameraPosition)
+        .to({
+          x: 0.33266818379163465,
+          y: 0.4567208098842309,
+          z: 0.009396602938231524,
+        })
+        .onUpdate(() => {
+          controls.target.set(
+            -0.18035187854860613,
+            0.34989708000472913,
+            0.014436166392607084
+          );
+          camera.position.copy(cameraPosition);
+        })
+        .start();
+    } else {
+      textButtonView = "View Mode";
+
+      let cameraPosition = {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      };
+
+      new TWEEN.Tween(cameraPosition)
+        .to({ x: 0, y: 3, z: -1 })
+        .onUpdate(() => {
+          controls.target.set(0, 0, 0);
+          camera.position.set(
+            cameraPosition.x,
+            cameraPosition.y,
+            cameraPosition.z
+          );
+        })
+        .start();
+    }
+  };
+
   const animate = () => {
     requestAnimationFrame(animate);
     controls.update();
-
+    TWEEN.update();
     // renderer.render(scene, camera);
     composer.render(scene, camera);
   };
@@ -498,6 +551,12 @@
 </script>
 
 <main>
+  <div class="view-button">
+    <button
+      style="--focus-color: {isGoMallMode ? '#fb8281' : '#006db6'}; "
+      on:click={onOverViewButton}>{textButtonView}</button
+    >
+  </div>
   <canvas class="full-screen" id="container" bind:this={canvas}> hihi </canvas>
 </main>
 
@@ -505,5 +564,29 @@
   .full-screen {
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  .view-button {
+    left: 50%;
+    position: absolute;
+    bottom: 20px;
+    transform: translate(-50%, -50%);
+    z-index: 1000; /* Ensure the button appears on top of the canvas */
+  }
+
+  button {
+    padding: 10px;
+    background-color: var(--focus-color);
+    color: white;
+    cursor: pointer;
+    border: var(--focus-border);
+
+    outline: none;
+    overflow: hidden;
+    transition: background-color 0.3s; /* Added transition for smooth color change */
+  }
+
+  button:hover {
+    background-color: #74b9e7;
   }
 </style>
