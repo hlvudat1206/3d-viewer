@@ -125,7 +125,7 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.5;
     renderer.setSize(widthScreen, heightScreen);
 
     cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024, {
@@ -270,7 +270,7 @@
         gtaoPass.output = _0x36e530;
       });
     const aoParameters = {
-      radius: 0.2,
+      radius: 0.1,
       distanceExponent: 1.85,
       thickness: 0.5,
       scale: 1.5,
