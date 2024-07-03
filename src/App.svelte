@@ -429,6 +429,7 @@
       });
     ssrGui.add(ssrPass, "blur");
     gui.close();
+    gui.hide();
     controls.addEventListener("change", () => {});
   };
 
