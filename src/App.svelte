@@ -85,7 +85,7 @@
       60,
       widthScreen / heightScreen,
       0.01,
-      1000
+      10
     );
     camera.position.set(0, 3, -1);
 
@@ -103,6 +103,8 @@
     light.castShadow = true;
     // light.shadow.bias = 0.0001;
     // light.position.set(0.5 * 2, 1 * 2, 0.866 * 2); // ~60º
+    // light.position.set(0.86, 1, 0.5); // ~30º
+    //x = cos(30), z= sin(30)
     light.shadow.camera.top = 2000;
     light.shadow.camera.bottom = -2000;
     light.shadow.camera.left = -2000;
@@ -115,6 +117,9 @@
     light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
     scene.add(light);
 
+    // const helper = new THREE.DirectionalLightHelper(light, 15, 0x000000);
+    // scene.add(helper);
+
     renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
@@ -125,7 +130,9 @@
     renderer.setPixelRatio(window.devicePixelRatio);
 
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    // renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.5;
     renderer.setSize(widthScreen, heightScreen);
@@ -193,6 +200,7 @@
     composer.addPass(renderPass);
     const gtaoPass = new GTAOPass(scene, camera, widthScreen, heightScreen);
     gtaoPass.output = GTAOPass.OUTPUT.Default;
+
     ssrPass = new SSRPass({
       renderer: renderer,
       scene: scene,
@@ -231,6 +239,7 @@
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            // child.material.envMap = exrEnv;
             if (noSelectSSR.includes(child.name)) {
             } else if (outSideVanElement.includes(child.name)) {
               child.material.envMap = exrEnv;
@@ -272,22 +281,22 @@
         gtaoPass.output = _0x36e530;
       });
     const aoParameters = {
-      radius: 0.1,
+      radius: 0.2,
       distanceExponent: 1.85,
-      thickness: 0.25,
+      thickness: 0.86,
       scale: 1.5,
-      samples: 0x20,
-      distanceFallOff: 0x1,
+      samples: 32,
+      distanceFallOff: 0.6,
       screenSpaceRadius: false,
     };
     const pdParameters = {
-      lumaPhi: 0xa,
-      depthPhi: 0x2,
-      normalPhi: 0x3,
+      lumaPhi: 10,
+      depthPhi: 2,
+      normalPhi: 3,
       radius: 0.5,
-      radiusExponent: 0x1,
-      rings: 0x2,
-      samples: 0x20,
+      radiusExponent: 1,
+      rings: 2,
+      samples: 20,
     };
     gtaoPass.updateGtaoMaterial(aoParameters);
     gtaoPass.updatePdMaterial(pdParameters);
