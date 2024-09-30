@@ -4,7 +4,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte()],
-  base: "/render-mobihome/",
+  base: "/3d-viewer/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
